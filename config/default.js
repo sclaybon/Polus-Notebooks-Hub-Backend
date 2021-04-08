@@ -1,7 +1,7 @@
 // prettier-ignore
 module.exports = {
   rest: {
-    port: +(process.env.API_PORT || 8000),
+    port: +(process.env.API_PORT || 8002),
     host: process.env.API_HOST || '0.0.0.0',
     openApiSpec: {
       setServersFromRequest: true,
