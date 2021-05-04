@@ -51,12 +51,12 @@ export class JupyterhubController {
 
     const http = require('http');
     const options = {
-      host: '192.168.99.161',
-      port: '30358',
-      path: '/hub/api/users/admin/server',
+      host: 'polus-notebooks-hub.ci.aws.labshare.org',
+      // port: '30358',
+      path: '/hub/api/users/swazoo.claybon@labshare.org/server',
       method: 'DELETE',
       headers: {
-        'Authorization': 'token c91907c3f8d0441db3e1e054238877ce'
+        'Authorization': 'token fff6cea84cff4f4aba855c6afae9a13b'
       }
     };
 
@@ -104,32 +104,44 @@ export class JupyterhubController {
 
   ): Promise<any> {
 
-    console.log('entering spawnDashboard method');
+    console.log("entering /spawnDashboard");
 
-    const http = require('http');
+    const https = require('https');
+
+    const data = JSON.stringify({
+      profile: 'Streamlit Dashboard Variable App',
+      dashboard: spawnDashboard.dashboard
+    });
+
     const options = {
-      host: '192.168.99.161',
-      port: '30358',
-      path: '/hub/api/users/admin/server',
+      hostname: 'polus-notebooks-hub.ci.aws.labshare.org',
+      path: '/hub/api/users/swazoo.claybon@labshare.org/server',
       method: 'POST',
       headers: {
-        'Authorization': 'token c91907c3f8d0441db3e1e054238877ce'
-      },
-      body: spawnDashboard,
-      json: true
+        'Authorization': 'token fff6cea84cff4f4aba855c6afae9a13b',
+        'Content-Type': 'application/json',
+        'Content-Length': data.length
+      }
     };
 
-    let request = http.request(options,function(res:any){
-      console.log("spawning dashboard");
+    const req = https.request(options, (res: any) => {
+      console.log(`statusCode: ${res.statusCode}`)
+
+      res.on('data', (d: string | Buffer) => {
+        process.stdout.write(d)
+      })
     });
 
-    request.on('error', function(e: any) {
-      console.error(e);
+    req.on('error', (error: any) => {
+      console.error(error)
     });
 
-    request.end();
 
-    console.log('leaving spawnDashboard method');
+    req.write(data);
+
+    console.log("leaving /spawnDashboard");
+
+    req.end();    
 
     return "spawning dashboard";  
   }  
