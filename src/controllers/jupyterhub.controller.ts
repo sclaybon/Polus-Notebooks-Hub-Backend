@@ -107,15 +107,25 @@ export class JupyterhubController {
     console.log("entering /spawnDashboard");
 
     const https = require('https');
+    var uri = '/hub/api/users/'+spawnDashboard.email.toLowerCase()+'/server';
+
+    //grab the file extension by splitting the array and grabbing the last element
+    var extension = spawnDashboard.dashboard.split('.')[spawnDashboard.dashboard.split('.').length - 1];
+
+    if(extension == "py"){
+      spawnDashboard.profile = "Streamlit Dashboard Variable App";
+    } else if (extension == "ipynb") {
+      spawnDashboard.profile = "Voila Dashboard Variable App";
+    }
 
     const data = JSON.stringify({
-      profile: 'Streamlit Dashboard Variable App',
+      profile: spawnDashboard.profile,
       dashboard: spawnDashboard.dashboard
     });
 
     const options = {
       hostname: 'polus-notebooks-hub.ci.aws.labshare.org',
-      path: '/hub/api/users/swazoo.claybon@labshare.org/server',
+      path: uri,
       method: 'POST',
       headers: {
         'Authorization': 'token fff6cea84cff4f4aba855c6afae9a13b',
@@ -123,6 +133,12 @@ export class JupyterhubController {
         'Content-Length': data.length
       }
     };
+
+    console.log("profile: " + spawnDashboard.profile);
+    console.log("email: " + spawnDashboard.email);
+    console.log("dashboard: " + spawnDashboard.dashboard);
+    console.log("uri: " + uri);
+
 
     const req = https.request(options, (res: any) => {
       console.log(`statusCode: ${res.statusCode}`)

@@ -26,7 +26,7 @@ import path from 'path';
 import {promisify} from 'util';
 
 const readdir = promisify(fs.readdir);
-const SANDBOX = path.resolve(__dirname, '../../sandbox');
+const SANDBOX = path.resolve(__dirname, '/opt/shared/notebooks');
 
 export class FileDownloadController {
   constructor() {}
@@ -49,10 +49,46 @@ export class FileDownloadController {
       },
     },
   })
-  async listFiles() {
-    const files = await readdir(SANDBOX);
+  // async listFiles() {
+  //   const files = await readdir(SANDBOX);
 
+  //   return files;
+  // }
+
+  async listFiles() {
+    console.log("reading the files");
+    const files = await dirTree(SANDBOX);
+    console.log(files);
     return files;
   }
+
   
 }
+
+function dirTree(filename: any): any{
+
+  var stats = fs.lstatSync(filename);
+
+  let info: any = {};
+
+  info = {
+      path: filename,
+      name: path.basename(filename)
+  };
+
+  if (stats.isDirectory()) {
+
+      // info.type = "folder";
+      info.children = fs.readdirSync(filename).map(function(child) {
+          return dirTree(filename + '/' + child);
+      });
+
+  } else {
+      // Assuming it's a file. In real life it could be a symlink or
+      // something else!
+      info.type = "file";
+  }
+
+  return info;
+}
+

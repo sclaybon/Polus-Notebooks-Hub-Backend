@@ -14,6 +14,12 @@ export class SpawnDashboard extends Entity {
   })
   dashboard: string;
 
+  @property({
+    type: 'string',
+    required: true,
+  })
+  email: string;
+
 
   constructor(data?: Partial<SpawnDashboard>) {
     super(data);
